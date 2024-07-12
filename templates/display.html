@@ -1,0 +1,104 @@
+{% extends "layouts/styles.html" %}
+
+{% block content %}
+
+<header class="bg-gradient-to-r from-purple-600 to-blue-500 text-white py-4 mb-6 flex justify-between items-center px-8 shadow-lg">
+    <h1 class="text-5xl font-semibold text-center flex-1">{{ articles.headline }}</h1>
+
+    <a href="/" class="pl-10 pt-6 block">
+        <button type="button"
+                class="flex items-center space-x-2 py-3 px-8 bg-rose-500 text-white font-semibold rounded-lg shadow-lg hover:bg-rose-600 focus:outline-none focus:ring focus:ring-lime-300 focus:ring-opacity-75">
+            RETURN
+        </button>
+    </a>
+</header>
+
+
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-gray-100 max-w-2xl mx-auto p-6 rounded-lg shadow-md">
+        <p class="whitespace-pre-line">{{ articles.body }}</p>
+    </div>
+
+    <div class="max-w-xl mx-auto mt-8">
+        <h2 class="text-2xl text-center mb-4">Comments</h2>
+        <div class="space-y-4" id="commentsSection">
+            {% if comments %}
+            {% for comment in comments %}
+            <div class="border bg-gray-100 border-gray-300 rounded-lg p-4 shadow-sm">
+                <div class="flex justify-between items-center">
+                    <form method="POST" action="/like/comment">
+                        <input type="hidden" name="comment_uuid" value="{{ comment.comment_uuid }}">
+                        <input type="hidden" name="uuid" value="{{ articles.uuid }}">
+                        <div class="flex items-center">
+                            <button type="submit" class="thumbs-up-button">
+                                <i class="fa fa-thumbs-up"></i>
+                            </button>
+                            <div class="text-black font-semibold ml-2">{{ comment.likes }}</div>
+                        </div>
+                    </form>
+                    <form action="/delete/comment" method="POST">
+                        <input type="hidden" name="comment_uuid" value="{{ comment.comment_uuid }}">
+                        <input type="hidden" name="uuid" value="{{ articles.uuid }}">
+                        <div class="flex justify-end">
+                            <button type="submit" class="material-symbols-outlined">close</button>
+                        </div>
+                    </form>
+                </div>
+                <p class="font-bold text-gray-800 pt-4">{{ comment.author }}</p>
+                <p class="mt-2 text-gray-600">{{ comment.comment }}</p>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="italic text-gray-500 text-center">No comments.</p>
+            {% endif %}
+        </div>
+        <div class="flex justify-center">
+        <button id="toggleCommentForm" class="mt-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-violet-400 focus:ring-opacity-75">
+            Add Comment
+        </button>
+        </div>
+
+
+        <div id="commentForm" class="hidden max-w-xl mx-auto mt-4">
+            <h2 class="text-2xl text-center mb-4">Leave a Comment</h2>
+            <div class="flex justify-center items-center">
+                <form action="/display" method="POST" class="w-full">
+                    <input type="hidden" name="uuid" value="{{ articles.uuid }}">
+                    <label for="author" class="block">
+                        <span class="block text-sm font-medium text-slate-700 mb-1">Author</span>
+                        <input type="text" id="author" name="author" value=""
+                               class="mt-1 px-3 py-2 w-full bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:border-violet-600 focus:ring-violet-600 sm:text-sm"
+                               placeholder="Enter author name" required>
+                    </label>
+
+                    <label for="comment" class="block mt-4">
+                        <span class="block text-sm font-medium text-slate-700 mb-1">Comment</span>
+                        <textarea id="comment" name="comment" rows="5"
+                                  class="mt-1 px-3 py-2 w-full bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:border-violet-600 focus:ring-violet-600 sm:text-sm"
+                                  placeholder="Enter comment" required></textarea>
+                    </label>
+
+                    <button type="submit"
+                            class="mt-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-400 focus:ring-opacity-75">
+                        SUBMIT
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('toggleCommentForm').addEventListener('click', function() {
+        var commentForm = document.getElementById('commentForm');
+        var addCommentButton = document.getElementById('toggleCommentForm');
+
+        if (commentForm.style.display === 'none' || commentForm.style.display === '') {
+            commentForm.style.display = 'block';
+            addCommentButton.style.display = 'none'; // Hide the button
+        } else {
+            commentForm.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}
